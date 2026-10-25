@@ -1,0 +1,12 @@
+data/
+!.gitkeep
+!data/README.md
+.env
+*.pem
+*.key
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+*.parquet
+*.pkl
