@@ -70,24 +70,29 @@ def bh_fdr(pvalues: pd.Series, q: float = 0.05) -> pd.Series:
 def event_study(
     events: pd.DataFrame,
     panel: pd.DataFrame,
-    windows: tuple[int, ...] = (1, 2, 5, 10),
+    windows: tuple[int, ...] = (1, 2, 3, 6),
 ) -> pd.DataFrame:
-    """事件研究：事件日后 N 日累计超额收益。
+    """事件研究（月度口径）：事件月后 w 个月累计超额收益。
 
     Parameters
     ----------
     events : pd.DataFrame
         列 [date, code]（可含 event_type 仅作分组统计用）。
+        date 格式 YYYY-MM（事件发生的月份，月度精度）。
     panel : pd.DataFrame
-        长表，列至少含 [date, code, ret_fwd1(次日收益), bench_ret_fwd1]，
-        交易日频率，按 (code, date) 排序。
+        长表，列至少含 [date, code, ret_fwd20, bench_ret_fwd20]，
+        月度频率（date=YYYY-MM 月末标签），按 (code, date) 排序。
+        面板中 date=M 行的 ret_fwd20 = M 月末之后约 1 个月（20 交易日）的收益，
+        即"事件后第 1 个月收益"。
     windows : tuple[int, ...]
-        观察窗口（交易日）。
+        观察窗口，单位=月。窗口 w 的累计收益 = 事件月起 w 个月收益链式复合
+        Π(1+r_i) − 1；超额 = 个股累计 − 基准同期累计。
 
     Returns
     -------
     pd.DataFrame
-        每行一个 (window,)：列 [window, n_events, mean_excess, t_stat, p_value]，
-        超额=个股累计收益-基准同期累计收益。
+        每行一个 window：列 [window, n_events, mean_excess, t_stat, p_value]。
+        事件股在面板缺失或后续月份不足的，该事件该窗口剔除（实现中需计数，
+        供报告披露）；某窗口有效事件数 < 10 时该行 t_stat/p_value 可为 NaN。
     """
     raise NotImplementedError

@@ -1,6 +1,4 @@
-data/
 !.gitkeep
-!data/README.md
 .env
 *.pem
 *.key
